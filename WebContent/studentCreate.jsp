@@ -11,10 +11,6 @@
 	padding: 10px;
 }
 
-.bigicon {
-	font-size: 35px;
-	color: #36A0FF;
-}
 </style>
 
 <link rel="stylesheet"
@@ -37,13 +33,13 @@
 								<ul class="nav nav-tabs">
 									<li class="active"><a href="javascript:void(0);"> Add
 											Student Info</a></li>
-									<li><a href="customer/create">View Student info</a></li>
+									<li><a href="list">View Student info</a></li>
 
 								</ul>
 							</div>
 
 
-							<form id="customersForm">
+							<form id="studentForm">
 								<div class="errors"></div>
 								<div class="well bs-component">
 									<div class="row">
@@ -62,7 +58,7 @@
 											<div class="form-group label-floating">
 												<div class="input-group">
 
-													<label class="control-label" for="Email ">LastName
+													<label class="control-label" for="Email ">Last Name
 													</label> <input class="form-control " name="lastName" id="lastName"
 														required />
 												</div>
@@ -162,18 +158,21 @@
 
 	<script>
 		function convertToJson() {
-			var menuData = {};
-			menuData.firstName = $("#code").val();
-			menuData.lastName = $("#name").val();
-			menuData.email = $("#category").val();
+			var studentData = {};
+			studentData.firstName = $("#firstName").val();
+			studentData.lastName = $("#lastName").val();
+			studentData.email = $("#email").val();
+			studentData.phoneNumber = $("#phoneNumber").val();
+			studentData.address = $("#address").val();
+			studentData.province = $("#province").val();
+			studentData.postalCode = $("#postalCode").val();
 
-			jsonData = JSON.stringify(menuData);
-			alert(jsonData)
+			jsonData = JSON.stringify(studentData);
 		}
 
 		//ONCLICK EVENT BUTTON SAVE
 		$("#btnSave").click(function() {
-			var form = $("rentForm");
+			var form = $("studentForm");
 			convertToJson();
 			$.ajax({
 				url : 'api/student',
@@ -183,12 +182,10 @@
 				contentType : 'application/json',
 				complete : function(response) {
 					if (response.status === 201) {
-
+						location.href='list'
 					}
 				}
 			});
-			resetForm();
-			reset();
 		});
 	</script>
 </body>

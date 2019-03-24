@@ -29,16 +29,25 @@ public class StudentWS extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		JSONObject jsonObject = HttpDataReader.readRawInputAsJson(req);
 		try {
-			String code = jsonObject.get("firstName").toString().trim();
-			String name = jsonObject.get("lastName").toString().trim();
-			String category = jsonObject.get("email").toString().trim();
+			String firstName = jsonObject.get("firstName").toString().trim();
+			String lastName = jsonObject.get("lastName").toString().trim();
+			String email = jsonObject.get("email").toString().trim();
+			String phoneNumber = jsonObject.get("phoneNumber").toString().trim();
+			String address = jsonObject.get("address").toString().trim();
+			String province = jsonObject.get("province").toString().trim();
+			String postalCode = jsonObject.get("postalCode").toString().trim();
 
-			String json = "{\r\n" + "\"firstName\":\"" + code + "\",\r\n" + "\"lastName\":\"" + name + "\",\r\n"
-					+ "\"email\":\"" + category + "\"\r\n" + "}";
+			String json = "{\r\n" + "\"firstName\":\"" + firstName + "\",\r\n" 
+					+ "\"lastName\":\"" + lastName + "\",\r\n"
+					+ "\"email\":\"" + email + "\",\r\n" 
+					+ "\"phoneNumber\":\"" + phoneNumber + "\",\r\n"
+					+ "\"address\":\"" + address + "\",\r\n" 
+					+ "\"province\":\"" + province + "\",\r\n"
+					+ "\"postalCode\":\"" + postalCode + "\"\r\n"
+					+ "}";
 
 			String query_url = "https://sad3-e5b09.firebaseapp.com/api/v1/contacts";
 
-			System.out.println(json);
 
 			URL url = new URL(query_url);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -55,10 +64,6 @@ public class StudentWS extends HttpServlet {
 			os.close();
 
 			int responseCode = conn.getResponseCode();
-
-			System.out.println("POST Response Code :  " + responseCode);
-
-			System.out.println("POST Response Message : " + conn.getResponseMessage());
 
 			if (responseCode == HttpURLConnection.HTTP_OK) { // success
 
@@ -78,10 +83,11 @@ public class StudentWS extends HttpServlet {
 				in.close();
 
 				System.out.println(response.toString());
+				resp.setStatus(HttpServletResponse.SC_CREATED);
 
 			} else {
 
-				System.out.println("POST NOT WORKED");
+				System.out.println("POST DOES NOT WORKS");
 
 			}
 
@@ -90,31 +96,30 @@ public class StudentWS extends HttpServlet {
 		}
 
 	}
-	
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
-	         URL url = new URL( "https://sad3-e5b09.firebaseapp.com/api/v1/contacts" );
-	         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-	         conn.setRequestMethod( "GET" );
-	         conn.setRequestProperty( "Accept", "application/json" );
+			URL url = new URL("https://sad3-e5b09.firebaseapp.com/api/v1/contacts");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
 
-	         conn.connect();
+			conn.connect();
 
-	         BufferedReader br = new BufferedReader( new InputStreamReader(
-	                 conn.getInputStream(), "UTF-8" ) );
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 
-	         StringBuilder sb = new StringBuilder( 2048 );
-	         for( String line; (line = br.readLine()) != null; ) {
-	            sb.append( line );
-	         }
-	         conn.disconnect();
+			StringBuilder sb = new StringBuilder(2048);
+			for (String line; (line = br.readLine()) != null;) {
+				sb.append(line);
+			}
+			conn.disconnect();
 
-	         System.out.println(sb);
+			System.out.println(sb);
 
-	      } catch( IOException ex ) {
-	         
-	      }
+		} catch (IOException ex) {
+
+		}
 
 	}
 }

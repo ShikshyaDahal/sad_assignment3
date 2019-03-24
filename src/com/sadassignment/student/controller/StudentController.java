@@ -12,10 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 public class StudentController extends HttpServlet{
 	
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		System.out.println("GET");
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {	
+		if(req.getRequestURI().equals(req.getContextPath() + "/list")) {
+			req.getRequestDispatcher("student.jsp").forward(req, resp);
+		}else {
 		req.getRequestDispatcher("studentCreate.jsp").forward(req, resp);
-
+		}
 	}
 
 }
