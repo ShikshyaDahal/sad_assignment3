@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,9 +15,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.sadassignment.entity.HttpDataReader;
+import com.sadassignment.student.entity.Student;
 
 @WebServlet("/api/student/*")
 public class StudentWS extends HttpServlet {
@@ -37,17 +45,12 @@ public class StudentWS extends HttpServlet {
 			String province = jsonObject.get("province").toString().trim();
 			String postalCode = jsonObject.get("postalCode").toString().trim();
 
-			String json = "{\r\n" + "\"firstName\":\"" + firstName + "\",\r\n" 
-					+ "\"lastName\":\"" + lastName + "\",\r\n"
-					+ "\"email\":\"" + email + "\",\r\n" 
-					+ "\"phoneNumber\":\"" + phoneNumber + "\",\r\n"
-					+ "\"address\":\"" + address + "\",\r\n" 
-					+ "\"province\":\"" + province + "\",\r\n"
-					+ "\"postalCode\":\"" + postalCode + "\"\r\n"
-					+ "}";
+			String json = "{\r\n" + "\"firstName\":\"" + firstName + "\",\r\n" + "\"lastName\":\"" + lastName
+					+ "\",\r\n" + "\"email\":\"" + email + "\",\r\n" + "\"phoneNumber\":\"" + phoneNumber + "\",\r\n"
+					+ "\"address\":\"" + address + "\",\r\n" + "\"province\":\"" + province + "\",\r\n"
+					+ "\"postalCode\":\"" + postalCode + "\"\r\n" + "}";
 
 			String query_url = "https://sad3-e5b09.firebaseapp.com/api/v1/contacts";
-
 
 			URL url = new URL(query_url);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -111,14 +114,69 @@ public class StudentWS extends HttpServlet {
 
 			StringBuilder sb = new StringBuilder(2048);
 			for (String line; (line = br.readLine()) != null;) {
+				System.out.println(line);
 				sb.append(line);
 			}
-			conn.disconnect();
 
-			System.out.println(sb);
+			JSONObject o = new JSONObject(sb.toString());
+			JSONObject obj = o.getJSONObject("contacts");
+			System.out.println(obj);
+			
+			List<Student> studentList=new ArrayList<>();
+			
+
+			JsonObject jobj = new Gson().fromJson(sb.toString(), JsonObject.class);
+			JsonObject jo = jobj.getAsJsonObject().get("contacts").getAsJsonObject();
+			
+			
+			jo.entrySet().stream().forEach(qm -> {
+				Student student=new Student();
+				String key = qm.getKey();
+				JsonElement je = qm.getValue();
+				
+				System.out.println("key: " + key);
+				
+				
+				JsonObject on = je.getAsJsonObject();
+				
+				
+				on.entrySet().stream().forEach(prop -> {
+					
+					
+					System.out.println("\tname: " + prop.getKey() + " (value: " + prop.getValue().getAsString() + ")");
+					
+					if(prop.getKey().equals("province")) {
+						student.setProvince(prop.getValue().getAsString());
+					}if(prop.getKey().equals("firstName")) {
+						student.setFirstName(prop.getValue().getAsString());
+					}if(prop.getKey().equals("lastName")) {
+						student.setLastName(prop.getValue().getAsString());
+					}if(prop.getKey().equals("email")) {
+						student.setEmail(prop.getValue().getAsString());
+					}if(prop.getKey().equals("address")) {
+						student.setAddress(prop.getValue().getAsString());
+					}if(prop.getKey().equals("phoneNumber")) {
+						student.setPhoneNumber(prop.getValue().getAsString());
+					}if(prop.getKey().equals("postalCode")) {
+						student.setPostalCode(prop.getValue().getAsString());
+					}
+
+				});
+				studentList.add(student);
+			});
+
+			ObjectMapper jsonObject = new ObjectMapper();
+			String jsonString = jsonObject.writeValueAsString(studentList);
+			resp.getWriter().write(jsonString);
+		//	resp.getWriter().write(obj.toString());
+
+			conn.disconnect();
 
 		} catch (IOException ex) {
 
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
