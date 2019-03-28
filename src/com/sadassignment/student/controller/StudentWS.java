@@ -51,7 +51,6 @@ public class StudentWS extends HttpServlet {
 					+ "\"postalCode\":\"" + postalCode + "\"\r\n" + "}";
 
 			String query_url = "https://sad3-e5b09.firebaseapp.com/api/v1/contacts";
-
 			URL url = new URL(query_url);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -61,14 +60,13 @@ public class StudentWS extends HttpServlet {
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
 			conn.setRequestMethod("POST");
-
 			OutputStream os = conn.getOutputStream();
 			os.write(json.getBytes("UTF-8"));
 			os.close();
 
 			int responseCode = conn.getResponseCode();
 
-			if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			if (responseCode == HttpURLConnection.HTTP_OK) { 
 
 				BufferedReader in = new BufferedReader(new InputStreamReader(
 
@@ -118,14 +116,19 @@ public class StudentWS extends HttpServlet {
 				sb.append(line);
 			}
 
-			JSONObject o = new JSONObject(sb.toString());
-			JSONObject obj = o.getJSONObject("contacts");
-			System.out.println(obj);
+			
 			
 			List<Student> studentList=new ArrayList<>();
 			
 
 			JsonObject jobj = new Gson().fromJson(sb.toString(), JsonObject.class);
+			
+			
+			JSONObject o = new JSONObject(sb.toString());
+			JSONObject obj = o.getJSONObject("contacts");
+			System.out.println(obj);
+			
+			
 			JsonObject jo = jobj.getAsJsonObject().get("contacts").getAsJsonObject();
 			
 			

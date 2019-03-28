@@ -26,6 +26,7 @@ public class HttpDataReader {
 					jb.append(line);
 				
 			} catch (Exception e) {
+				
 				e.printStackTrace();
 			}
 			return jb.toString();
